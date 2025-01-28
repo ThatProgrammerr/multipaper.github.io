@@ -24,4 +24,5 @@ Make sure to keep frequent backups of your world data, and report any bugs on Gi
 ## Plugin support
 
 Will my Bukkit plugin work? Probably not.
+
 Some plugins will work out of the box, however most plugins aren't designed for a multi-server environment. MultiPaper-compatible plugins must sync data with other servers in real time, and handle the many edge cases that come along with it. Make sure you're ready to commit the time and capital required to get your plugins working with MultiPaper.
