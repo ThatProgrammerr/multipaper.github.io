@@ -13,3 +13,6 @@ callouts:
   warning:
     title: Warning
     color: red
+
+mermaid:
+  version: "11.4.1"
