@@ -5,6 +5,7 @@ theme: just-the-docs
 url: https://multipaper.github.io/
 
 aux_links:
+  Download: https://multipaper.io/download.html
   GitHub: https://github.com/MultiPaper/MultiPaper
   Discord: https://discord.gg/dN3WCZkSRV
 
