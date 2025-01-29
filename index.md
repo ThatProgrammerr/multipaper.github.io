@@ -21,7 +21,7 @@ Make sure to keep frequent backups of your world data, and report any bugs on Gi
 3. An optional load balancer (eg BungeeCord, Velocity, TCPShield, etc)
 4. The players
 
-[Read more](multipaper/how-it-works.md)
+[Read more](multipaper/how-it-works.html)
 
 ## Plugin support
 
