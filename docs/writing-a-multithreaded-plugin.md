@@ -1,6 +1,7 @@
 ---
 title: Writing a multithreaded plugin
 layout: default
+parent: Docs
 ---
 
 # Writing a multithreaded plugin
