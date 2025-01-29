@@ -1,5 +1,5 @@
 ---
-title: Home
+title: MultiPaper
 layout: home
 ---
 
@@ -20,6 +20,8 @@ Make sure to keep frequent backups of your world data, and report any bugs on Gi
 2. The MultiPaper servers
 3. An optional load balancer (eg BungeeCord, Velocity, TCPShield, etc)
 4. The players
+
+[Read more](multipaper/how-it-works.md)
 
 ## Plugin support
 
