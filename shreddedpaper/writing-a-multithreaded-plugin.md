@@ -226,15 +226,23 @@ synchronized void nextPlayer() {
 Common data types are typically **not** multithread safe.
 This means only one thread can safely access them at a time.
 For example:
-- `ArrayList`
-- `LinkedList`
-- `HashMap`
-- `HashSet`
+
+```java
+// Not thread-safe data types:
+List list = new ArrayList();
+Queue queue = new LinkedList();
+Map map = new HashMap();
+Set set = new HashSet();
+```
 
 If you need multiple threads to be able to access the data types at the same time,
 consider these following thread-safe data types instead:
-- `Collections.synchronizedList(new ArrayList())`
-- `CopyOnWriteArrayList`
-- `LinkedBlockingDeque`
-- `ConcurrentHashMap`
-- `ConcurrentHashMap.newKeySet()`
+
+```java
+// Thread-safe data types
+List frequentlyModifiedList = Collections.synchronizedList(new ArrayList());
+List infrequentlyModifiedList = new CopyOnWriteArrayList();
+Queue queue = new LinkedBlockingDeque();
+Map map = new ConcurrentHashMap();
+Set set = ConcurrentHashMap.newKeySet();
+```
