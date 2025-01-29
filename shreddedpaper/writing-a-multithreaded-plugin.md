@@ -138,6 +138,20 @@ Bukkit.getAsyncScheduler().runNow(plugin, t -> {
 
 During most events and commands, you will be on the thread of the player/entity/block that triggered the event or command.
 
+### Use teleportAsync
+
+When teleporting entities or players, be sure to do:
+
+```java
+entity.teleportAsync(location);
+```
+
+Not this:
+
+```java
+entity.teleport(location); // Do not do this
+```
+
 ## Java gotchas for multithreaded plugins
 
 ### Race conditions
