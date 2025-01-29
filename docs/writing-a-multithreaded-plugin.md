@@ -5,17 +5,18 @@ layout: default
 
 # Writing a multithreaded plugin
 
-The Minecraft server runs game code primarily on a single thread. This is huge limitation as a single thread can only be so fast.
+The Minecraft server runs game code primarily on a single thread. This is huge limitation as a singular thread can only be so fast.
 
 Luckily, there are server cores that allow the game code to run on multiple threads.
 These include [Folia](https://papermc.io/software/folia) and [ShreddedPaper](https://github.com/MultiPaper/ShreddedPaper).
+However, a normal Bukkit plugin will not work on these server cores, and needs to be rewritten to have a multithread environment.
 
 ## What is a thread?
 
 ### Single threaded
 
 A thread is what your code executes on. One thread can execute one piece of code at a time.
-This means if your plugin is single-threaded, only one part of the plugin will be executing at a given time.
+This means if your plugin is single-threaded, only one part of the plugin will be executed at a given time.
 
 ```mermaid
 flowchart LR
@@ -122,9 +123,19 @@ if (Bukkit.isOwnedByCurrentRegion(entity)) {
 }
 ```
 
+### Asynchronous calls
+
+Asynchronous calls can be made with:
+
+```java
+Bukkit.getAsyncScheduler().runNow(plugin, t -> {
+    // Async code goes here
+});
+```
+
 ### Tips
 
-During most events and commands, you will be on the thread of the player/entity/block that triggered the event or ran the command.
+During most events and commands, you will be on the thread of the player/entity/block that triggered the event or command.
 
 ## Java gotchas for multithreaded plugins
 
@@ -163,21 +174,52 @@ This makes sense. However, if the method `nextPlayer` is running on two threads 
 
 This shows the issue of race conditions and why you need to try to avoid them
 
+### Synchronized statement
+
+To avoid race conditions, you may need to make sure your code is only executing on one thread at a time.
+A `synchronized` statement solves this by locking the given Java object. For example:
+
+```java
+final Object lockObject = new Object();
+Player player;
+
+void nextPlayer() {
+    synchronized (this.lockObject) {
+        // This block of code will only run once at a time for any `this.lockObject`
+        Player nextPlayer = this.getTheNextPlayer(this.player);
+        nextPlayer.sendMessage("You are now the player!");
+        this.player = nextPlayer;
+    }
+}
+```
+
+You can also lock the object that holds the method as so:
+
+```java
+Player player;
+
+synchronized void nextPlayer() {
+    // This block of code will only run once at a time for the object containing this method
+    Player nextPlayer = this.getTheNextPlayer(this.player);
+    nextPlayer.sendMessage("You are now the player!");
+    this.player = nextPlayer;
+}
+```
+
 ### Data types
 
-Common data types are typically **not** multithread safe. For example:
+Common data types are typically **not** multithread safe.
+This means only one thread can safely access them at a time.
+For example:
 - `ArrayList`
 - `LinkedList`
 - `HashMap`
 - `HashSet`
 
-Consider these following thread-safe data types instead:
+If you need multiple threads to be able to access the data types at the same time,
+consider these following thread-safe data types instead:
 - `Collections.synchronizedList(new ArrayList())`
 - `CopyOnWriteArrayList`
 - `LinkedBlockingDeque`
 - `ConcurrentHashMap`
 - `ConcurrentHashMap.newKeySet()`
-
-### Locks
-
-Locks
