@@ -1,7 +1,7 @@
 ---
 title: Writing a multithreaded plugin
 layout: default
-parent: Docs
+parent: ShreddedPaper
 ---
 
 # Writing a multithreaded plugin
