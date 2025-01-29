@@ -140,13 +140,13 @@ During most events and commands, you will be on the thread of the player/entity/
 
 ### Use teleportAsync
 
-When teleporting entities or players, be sure to do:
+When teleporting entities or players, be sure to do this:
 
 ```java
 entity.teleportAsync(location);
 ```
 
-Not this:
+Instead of this:
 
 ```java
 entity.teleport(location); // Do not do this
