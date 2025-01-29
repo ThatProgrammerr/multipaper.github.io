@@ -1,0 +1,164 @@
+
+<title>MultiPaper Downloads</title>
+
+<style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        background: #f8fff8;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+        height: 100%;
+        justify-content: center;
+        margin: 0;
+    }
+
+    main {
+        background: white;
+        box-shadow: 0 0 5px #637063;
+        height: fit-content;
+        margin: 0 auto;
+        min-width: 850px;
+        padding: 40px 10px;
+        text-align: center;
+    }
+
+    table {
+        font-size: 0.9em;
+        width: 100%;
+    }
+
+    tr.header {
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    td {
+        border-bottom: 1px #aaa solid;
+        min-width: 170px;
+        padding: 15px;
+        padding-top: 17px;
+        text-align: center;
+    }
+
+    ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+        text-align: left;
+    }
+
+    li {
+        width: 450px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    code {
+        position: relative;
+        top: -2px;
+    }
+
+    a {
+        color: rgb(0, 153, 0);
+    }
+</style>
+
+<main>
+    <h1>MultiPaper Downloads</h1>
+    <p>
+        MultiPaper downloads on this page are licensed under <a href="https://github.com/MultiPaper/MultiPaper/blob/main/LICENSE.txt">GPLv3</a><br/>
+        MultiPaper-Master downloads are licensed under <a href="https://github.com/MultiPaper/MultiPaper/blob/main/MultiPaper-Master/LICENSE.txt">MIT</a>
+    </p>
+</main>
+
+<script>
+    const insertVersionGroupLinks = (versions, selectedVersion, latestVersion) => {
+        const p = document.createElement('p');
+        p.innerHTML = versions
+            .map(version => version == selectedVersion ? version : `<a href="?${version}">${version}</a>`)
+            .join(' | ');
+        document.querySelector('main').appendChild(p);
+
+        if (selectedVersion != latestVersion) {
+            const error = document.createElement('p');
+            error.innerHTML = 'Warning: These versions are outdated and may not contain the latest security and stability features.<br/>No support will be given for these builds.';
+            error.style.color = 'red';
+            document.querySelector('main').appendChild(error);
+        }
+    }
+
+    const insertVersion = version => {
+        const h2 = document.createElement('h2');
+        h2.innerText = `Version ${version}`;
+        document.querySelector('main').appendChild(h2);
+        
+        table = document.createElement('table');
+        table.innerHTML = '<tr class="header"><td>Build No.</td><td>Changes</td><td>Download</td></tr>'
+        table.cellSpacing = 0;
+        document.querySelector('main').appendChild(table);
+
+        return table;
+    };
+
+    const insertBuild = (data, table) => {
+        const tr = document.createElement('tr');
+
+        table.appendChild(tr);
+
+        const build = document.createElement('td');
+        build.innerHTML = `<b>#${data.build}</b> ${new Date(data.time).toLocaleDateString()}`;
+        tr.appendChild(build);
+
+        const changes = document.createElement('td');
+        changes.innerHTML = `<ul>${data.changes.map(change => `<li><code>[<a href="https://github.com/MultiPaper/MultiPaper/commit/${change.commit}">${change.commit.substr(0, 7)}</a>]</code> ${change.summary}</li>`).join('')}</ul>`;
+        tr.appendChild(changes);
+
+        const downloads = document.createElement('td');
+        downloads.innerHTML = Object.values(data.downloads).map(download => `<a href="${getFileUrl(data, download.name)}">${download.name}</a>`).join('<br/>');
+        tr.appendChild(downloads);
+    };
+
+    const getFileUrl = (build, file) => {
+        return `https://api.multipaper.io/v2/projects/multipaper/versions/${build.version}/builds/${build.build}/downloads/${file}`;
+    };
+
+    const fetchBuilds = async (url) => {
+        const data = await (await fetch(url)).json();
+
+        let lastVersion;
+        let table;
+        
+        for (let i = data.builds.length - 1; i >= 0 && i >= data.builds.length - 50; i--) {
+            const build = data.builds[i];
+
+            if (build.version != lastVersion) {
+                lastVersion = build.version;
+                table = insertVersion(lastVersion);
+            }
+
+            insertBuild(build, table);
+        }
+    };
+
+    const fetchVersions = async (url) => {
+        const data = await (await fetch(url)).json();
+
+        const lastestVersion = data.version_groups[data.version_groups.length - 1];
+        let versionGroup;
+        if (location.search.length && ~data.version_groups.indexOf(location.search.substr(1))) {
+            versionGroup = location.search.substr(1);
+        } else {
+            versionGroup = lastestVersion;
+        }
+
+        insertVersionGroupLinks(data.version_groups, versionGroup, lastestVersion);
+
+        fetchBuilds(`${url}/version_group/${versionGroup}/builds`);
+    };
+
+    fetchVersions('https://api.multipaper.io/v2/projects/multipaper');
+</script>
